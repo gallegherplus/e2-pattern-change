@@ -240,20 +240,20 @@
   function sendProgramChange(patternNum) {
     if (!electribeOutput) return false;
 
-    // Pattern numbers are 1-250 on the display
-    // Internal: 0-249
-    const internal = patternNum - 1;
+    // Electribe 2 has 250 patterns
+    // MIDI Program Change is 0-indexed (0-127 per bank)
+    // Banks accessed via Bank Select CC0 (MSB) and CC32 (LSB)
+    const internal = patternNum - 1; // 0-249
+    const bank = Math.floor(internal / 128); // 0 or 1
+    const program = internal % 128; // 0-127
 
-    // Bank select for patterns > 127
-    const bank = Math.floor(internal / 128);
-    const program = internal % 128;
+    // Electribe 2 bank mapping:
+    // Bank 0 (patterns 1-128):  CC0=0, CC32=0
+    // Bank 1 (patterns 129-250): CC0=0, CC32=1
 
-    // Bank Select MSB (CC 0)
-    electribeOutput.send([0xB0, 0x00, bank]);
-    // Bank Select LSB (CC 32)
-    electribeOutput.send([0xB0, 0x20, 0x00]);
-    // Program Change
-    electribeOutput.send([0xC0, program]);
+    electribeOutput.send([0xB0, 0x00, 0x00]);       // CC0 Bank Select MSB = 0
+    electribeOutput.send([0xB0, 0x20, bank]);         // CC32 Bank Select LSB = bank
+    electribeOutput.send([0xC0, program]);             // Program Change
 
     return true;
   }
