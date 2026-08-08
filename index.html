@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -15,285 +15,125 @@
     --surface: #151515;
     --border: #282828;
     --text: #e0e0e0;
-    --muted: #666;
+    --muted: #555;
     --green: #4caf50;
     --red: #ff3333;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-  html, body {
-    height: 100%;
-    overflow: hidden;
-  }
-
+  html, body { height: 100%; overflow: hidden; }
   body {
     font-family: 'SF Pro Display', 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    display: flex;
-    flex-direction: column;
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
+    background: var(--bg); color: var(--text);
+    display: flex; flex-direction: column;
+    touch-action: manipulation; user-select: none; -webkit-user-select: none;
   }
 
-  /* ── Header ─────────────────────────────────────── */
-
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px 0;
-    flex-shrink: 0;
-  }
-
-  .header-left {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .header-left h1 {
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--orange);
-  }
-
-  .header-left .sub {
-    font-size: 0.55rem;
-    color: var(--muted);
-    letter-spacing: 1.5px;
-    margin-top: 1px;
-  }
-
-  .conn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 10px;
-    border-radius: 16px;
-    font-size: 0.55rem;
-    letter-spacing: 0.5px;
-    transition: all 0.3s;
-  }
-
-  .conn .dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--muted);
-    flex-shrink: 0;
-    transition: background 0.3s;
-  }
-
-  .conn.ok { background: rgba(76, 175, 80, 0.1); }
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px 0; flex-shrink: 0; }
+  .header-left h1 { font-size: 0.95rem; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: var(--orange); }
+  .header-left .sub { font-size: 0.55rem; color: var(--muted); letter-spacing: 1.5px; margin-top: 1px; }
+  .conn { display: flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 16px; font-size: 0.55rem; letter-spacing: 0.5px; transition: all 0.3s; }
+  .conn .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: background 0.3s; }
+  .conn.ok { background: rgba(76,175,80,0.1); }
   .conn.ok .dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
-  .conn.err { background: rgba(255, 51, 51, 0.1); }
+  .conn.err { background: rgba(255,51,51,0.1); }
   .conn.err .dot { background: var(--red); }
+  .conn .name { color: var(--muted); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  .conn .name {
-    color: var(--muted);
-    max-width: 120px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  /* ── Display ────────────────────────────────────── */
-
-  .display {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0 20px;
-    min-height: 0;
-    gap: 4px;
-  }
-
-  .pattern-num {
-    font-size: clamp(5rem, 28vw, 10rem);
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    color: var(--orange);
-    letter-spacing: 0.05em;
-    line-height: 1;
-    text-shadow: 0 0 40px rgba(255, 107, 53, 0.2);
-    transition: color 0.15s;
-  }
-
+  /* Display */
+  .display { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0 20px; min-height: 0; gap: 4px; }
+  .pattern-num { font-size: clamp(4rem, 24vw, 9rem); font-weight: 800; font-variant-numeric: tabular-nums; color: var(--orange); letter-spacing: 0.05em; line-height: 1; text-shadow: 0 0 40px rgba(255,107,53,0.2); transition: color 0.15s; }
   .pattern-num.sending { color: var(--green); }
+  .pattern-num.error { color: var(--red); animation: shake 0.3s; }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-5px)} 80%{transform:translateX(5px)} }
+  .send-hint { font-size: 0.6rem; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; }
 
-  .pattern-num.error {
-    color: var(--red);
-    animation: shake 0.3s;
+  /* Chain Section */
+  .chain-section { flex-shrink: 0; padding: 0 10px; }
+  .chain-row { display: flex; gap: 5px; justify-content: center; }
+  .chain-box {
+    flex: 1; max-width: 50px; height: 44px;
+    border: 2px solid var(--border); border-radius: 8px;
+    background: var(--surface); color: var(--text);
+    font-size: 1rem; font-weight: 600; font-family: inherit;
+    text-align: center; outline: none; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    -webkit-appearance: none; padding: 0;
   }
+  .chain-box::placeholder { color: #333; font-size: 0.7rem; font-weight: 400; }
+  .chain-box.selected { border-color: var(--orange); background: rgba(255,107,53,0.06); box-shadow: 0 0 8px rgba(255,107,53,0.15); }
+  .chain-box.playing { border-color: var(--green); background: rgba(76,175,80,0.08); box-shadow: 0 0 10px rgba(76,175,80,0.2); }
+  .chain-box.done { border-color: #2a2a2a; background: #111; color: var(--muted); }
 
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20% { transform: translateX(-8px); }
-    40% { transform: translateX(8px); }
-    60% { transform: translateX(-5px); }
-    80% { transform: translateX(5px); }
-  }
+  /* Chain Controls */
+  .chain-controls { display: flex; justify-content: center; gap: 8px; margin-top: 8px; margin-bottom: 10px; }
+  .chain-btn { padding: 6px 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--muted); font-size: 0.65rem; font-weight: 600; font-family: inherit; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: all 0.1s; }
+  .chain-btn:active { background: #1e1e1e; color: var(--text); }
+  .chain-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+  .chain-btn.play { background: var(--orange); color: #0a0a0a; border: none; }
+  .chain-btn.play:active { background: var(--orange-dim); }
+  .chain-btn.play:disabled { background: #1a1a1a; color: #333; }
+  .chain-btn.stop { background: var(--red); color: #fff; border: none; }
+  .chain-btn.stop:active { background: #cc2222; }
 
-  .send-hint {
-    font-size: 0.6rem;
-    color: var(--muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
+  /* Bottom */
+  .bottom { flex-shrink: 0; padding: 0 10px 20px; }
 
-  /* ── Bottom Section ─────────────────────────────── */
+  /* Quick Jumps */
+  .quick { display: flex; justify-content: center; gap: 6px; margin-bottom: 10px; }
+  .quick button { padding: 8px 0; width: 48px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--muted); font-size: 0.65rem; font-weight: 500; font-family: inherit; letter-spacing: 0.5px; cursor: pointer; transition: background 0.1s, color 0.1s; }
+  .quick button:active { background: #1e1e1e; color: var(--text); }
+  .quick button:disabled { opacity: 0.25; cursor: not-allowed; }
 
-  .bottom {
-    flex-shrink: 0;
-    padding: 0 10px 20px;
-  }
-
-  /* ── Quick Jumps ────────────────────────────────── */
-
-  .quick {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    margin-bottom: 12px;
-  }
-
-  .quick button {
-    padding: 8px 0;
-    width: 52px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--muted);
-    font-size: 0.7rem;
-    font-weight: 500;
-    font-family: inherit;
-    letter-spacing: 0.5px;
-    cursor: pointer;
-    transition: background 0.1s, color 0.1s;
-  }
-
-  .quick button:active {
-    background: #1e1e1e;
-    color: var(--text);
-  }
-
-  .quick button:disabled {
-    opacity: 0.25;
-    cursor: not-allowed;
-  }
-
-  /* ── Numpad ─────────────────────────────────────── */
-
-  .numpad-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    max-width: 360px;
-    margin: 0 auto;
-  }
-
-  .key {
-    height: 58px;
-    border: none;
-    border-radius: 12px;
-    font-size: 1.5rem;
-    font-weight: 500;
-    font-family: inherit;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.08s, background 0.1s;
-    -webkit-tap-highlight-color: transparent;
-  }
-
+  /* Numpad */
+  .numpad-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; max-width: 360px; margin: 0 auto; }
+  .key { height: 58px; border: none; border-radius: 12px; font-size: 1.5rem; font-weight: 500; font-family: inherit; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.08s, background 0.1s; -webkit-tap-highlight-color: transparent; }
   .key:active { transform: scale(0.94); }
-
-  .key-num {
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-  }
-
+  .key-num { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
   .key-num:active { background: #1e1e1e; }
-
-  .key-del {
-    background: var(--surface);
-    color: var(--muted);
-    border: 1px solid var(--border);
-    font-size: 1.2rem;
-  }
-
+  .key-del { background: var(--surface); color: var(--muted); border: 1px solid var(--border); font-size: 1.2rem; }
   .key-del:active { background: #1e1e1e; }
-
-  .key-send {
-    background: var(--orange);
-    color: #0a0a0a;
-    font-weight: 800;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    border: none;
-  }
-
+  .key-send { background: var(--orange); color: #0a0a0a; font-weight: 800; font-size: 1rem; letter-spacing: 2px; text-transform: uppercase; border: none; }
   .key-send:active { background: var(--orange-dim); }
-
-  .key-send:disabled {
-    background: #1a1a1a;
-    color: #333;
-    cursor: not-allowed;
-  }
-
+  .key-send:disabled { background: #1a1a1a; color: #333; cursor: not-allowed; }
   .key-send:disabled:active { transform: none; }
 
-  /* ── Toast ──────────────────────────────────────── */
-
-  .toast {
-    position: fixed;
-    bottom: 30px;
-    left: 50%;
-    transform: translateX(-50%) translateY(80px);
-    padding: 10px 22px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    letter-spacing: 1px;
-    pointer-events: none;
-    opacity: 0;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-    z-index: 100;
-  }
-
-  .toast.show {
-    transform: translateX(-50%) translateY(0);
-    opacity: 1;
-  }
-
-  .toast.ok { background: rgba(76, 175, 80, 0.92); color: #fff; }
-  .toast.err { background: rgba(255, 51, 51, 0.92); color: #fff; }
+  /* Toast */
+  .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px); padding: 10px 22px; border-radius: 8px; font-size: 0.8rem; font-weight: 500; letter-spacing: 1px; pointer-events: none; opacity: 0; transition: transform 0.3s ease, opacity 0.3s ease; z-index: 100; }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .toast.ok { background: rgba(76,175,80,0.92); color: #fff; }
+  .toast.err { background: rgba(255,51,51,0.92); color: #fff; }
 </style>
 </head>
 <body>
-
   <div class="header">
     <div class="header-left">
       <h1>Electribe 2</h1>
-      <div class="sub">Pattern Change — USB MIDI</div>
+      <div class="sub">Pattern Change - USB MIDI</div>
     </div>
-    <div class="conn" id="conn">
-      <div class="dot"></div>
-      <span class="name" id="conn-name">Connecting...</span>
-    </div>
+    <div class="conn" id="conn"><div class="dot"></div><span class="name" id="conn-name">Connecting...</span></div>
   </div>
 
   <div class="display">
     <div class="pattern-num" id="display">---</div>
-    <div class="send-hint" id="send-hint">Tap a number</div>
+    <div class="send-hint" id="send-hint">Tap a box, enter pattern</div>
+  </div>
+
+  <div class="chain-section">
+    <div class="chain-row" id="chain-row">
+      <input class="chain-box" id="cb0" type="text" inputmode="numeric" maxlength="3" placeholder="---">
+      <input class="chain-box" id="cb1" type="text" inputmode="numeric" maxlength="3" placeholder="---">
+      <input class="chain-box" id="cb2" type="text" inputmode="numeric" maxlength="3" placeholder="---">
+      <input class="chain-box" id="cb3" type="text" inputmode="numeric" maxlength="3" placeholder="---">
+      <input class="chain-box" id="cb4" type="text" inputmode="numeric" maxlength="3" placeholder="---">
+      <input class="chain-box" id="cb5" type="text" inputmode="numeric" maxlength="3" placeholder="---">
+      <input class="chain-box" id="cb6" type="text" inputmode="numeric" maxlength="3" placeholder="---">
+      <input class="chain-box" id="cb7" type="text" inputmode="numeric" maxlength="3" placeholder="---">
+    </div>
+    <div class="chain-controls">
+      <button class="chain-btn play" id="btn-play" disabled>&#9654; Play Chain</button>
+      <button class="chain-btn" id="btn-clear" disabled>Clear</button>
+    </div>
   </div>
 
   <div class="bottom">
@@ -305,7 +145,6 @@
       <button onclick="jumpTo(129)">129</button>
       <button onclick="jumpTo(200)">200</button>
     </div>
-
     <div class="numpad-grid">
       <button class="key key-num" data-val="1">1</button>
       <button class="key key-num" data-val="2">2</button>
@@ -316,219 +155,337 @@
       <button class="key key-num" data-val="7">7</button>
       <button class="key key-num" data-val="8">8</button>
       <button class="key key-num" data-val="9">9</button>
-      <button class="key key-del" id="btn-del">⌫</button>
+      <button class="key key-del" id="btn-del">&#9003;</button>
       <button class="key key-num" data-val="0">0</button>
       <button class="key key-send" id="btn-send" disabled>GO</button>
     </div>
   </div>
-
   <div class="toast" id="toast"></div>
-
 <script>
-(function () {
-  const display  = document.getElementById('display');
-  const sendHint = document.getElementById('send-hint');
-  const connEl   = document.getElementById('conn');
-  const connName = document.getElementById('conn-name');
-  const btnDel   = document.getElementById('btn-del');
-  const btnSend  = document.getElementById('btn-send');
-  const toastEl  = document.getElementById('toast');
-  const quickBar = document.getElementById('quick');
+  // State
+  let midiAccess = null, midiOut = null, currentPC = null;
+  let input = '', selectedBox = null, isSending = false;
+  let chainPlaying = false, chainStep = 0, chainTimer = null;
+  const chainBoxes = Array.from({length:8}, (_,i) => document.getElementById('cb'+i));
 
-  let currentInput = '';
-  let midiAccess   = null;
-  let output       = null;
-  let sending      = false;
+  // Elements
+  const $display = document.getElementById('display');
+  const $hint = document.getElementById('send-hint');
+  const $conn = document.getElementById('conn');
+  const $connName = document.getElementById('conn-name');
+  const $btnSend = document.getElementById('btn-send');
+  const $btnDel = document.getElementById('btn-del');
+  const $btnPlay = document.getElementById('btn-play');
+  const $btnClear = document.getElementById('btn-clear');
+  const $toast = document.getElementById('toast');
+  const $quick = document.getElementById('quick');
+  const $numpad = document.querySelector('.numpad-grid');
 
-  // ── Display ──────────────────────────────────────
-
-  function refreshDisplay() {
-    if (currentInput === '') {
-      display.textContent = '---';
-      display.className = 'pattern-num';
-      sendHint.textContent = 'Tap a number';
-      btnSend.disabled = true;
-    } else {
-      const num = parseInt(currentInput, 10);
-      display.textContent = String(num).padStart(3, '0');
-      display.className = 'pattern-num';
-      if (num >= 1 && num <= 250) {
-        sendHint.textContent = 'Tap GO to send';
-        btnSend.disabled = false;
-      } else {
-        sendHint.textContent = 'Range: 001 — 250';
-        btnSend.disabled = true;
-      }
-    }
-  }
-
-  function flashDisplay(cls) {
-    display.className = 'pattern-num ' + cls;
-  }
-
-  // ── Toast ────────────────────────────────────────
-
-  let toastTimer = null;
-  function showToast(msg, type) {
-    toastEl.textContent = msg;
-    toastEl.className = 'toast ' + type + ' show';
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { toastEl.className = 'toast'; }, 2000);
-  }
-
-  // ── Vibrate ──────────────────────────────────────
-
-  function vibrate(ms) {
-    if (navigator.vibrate) navigator.vibrate(ms);
-  }
-
-  // ── MIDI ─────────────────────────────────────────
-
-  async function initMIDI() {
-    if (!navigator.requestMIDIAccess) {
-      connEl.className = 'conn err';
-      connName.textContent = 'Web MIDI not supported';
-      return;
-    }
+  // MIDI Setup
+  async function initMidi() {
     try {
-      midiAccess = await navigator.requestMIDIAccess({ sysex: false });
-      midiAccess.onstatechange = () => findDevice();
-      findDevice();
-    } catch {
-      connEl.className = 'conn err';
-      connName.textContent = 'MIDI access denied';
+      midiAccess = await navigator.requestMIDIAccess();
+      midiAccess.onstatechange = () => findElectribe();
+      await findElectribe();
+    } catch(e) {
+      console.error(e);
+      $conn.className = 'conn err';
+      $connName.textContent = 'No MIDI access';
     }
   }
 
-  function findDevice() {
-    output = null;
-    for (const [, port] of midiAccess.outputs) {
-      const n = port.name.toLowerCase();
-      if (n.includes('electribe') || n.includes('korg')) {
-        output = port;
+  async function findElectribe() {
+    midiOut = null;
+    $conn.className = 'conn err';
+    $connName.textContent = 'Scanning...';
+
+    const wait = new Promise(r => setTimeout(r, 2000));
+    for (const [, output] of midiAccess.outputs) {
+      const name = output.name || '';
+      const state = output.state;
+      console.log('MIDI output:', name, 'state:', state, 'id:', output.id);
+
+      if (state === 'connected' &&
+          (name.toLowerCase().includes('electribe') ||
+           name.toLowerCase().includes('e2') ||
+           name.toLowerCase().includes('korg'))) {
+        midiOut = output;
+        console.log('Found Electribe:', name, output.id);
         break;
       }
     }
-    if (output) {
-      connEl.className = 'conn ok';
-      connName.textContent = output.name;
-      refreshDisplay();
-      quickBar.querySelectorAll('button').forEach(b => b.disabled = false);
+
+    // Fallback: if nothing matched, grab first connected output
+    if (!midiOut) {
+      for (const [, output] of midiAccess.outputs) {
+        if (output.state === 'connected') {
+          midiOut = output;
+          console.log('Fallback connected:', output.name, output.id);
+          break;
+        }
+      }
+    }
+
+    await wait;
+
+    if (midiOut) {
+      $conn.className = 'conn ok';
+      $connName.textContent = midiOut.name || 'Connected';
+      console.log('Using device:', midiOut.name);
     } else {
-      connEl.className = 'conn err';
-      connName.textContent = 'Connect Electribe 2 via USB';
-      btnSend.disabled = true;
-      quickBar.querySelectorAll('button').forEach(b => b.disabled = true);
-      const devs = [];
-      for (const [, p] of midiAccess.outputs) devs.push(p.name);
-      if (devs.length) connName.textContent += ' — ' + devs.join(', ');
+      $conn.className = 'conn err';
+      $connName.textContent = 'Not connected';
+      console.log('No output devices found');
     }
   }
 
-  // ── Send MIDI ────────────────────────────────────
-
-  function sendPC(patternNum) {
-    if (!output || sending) return false;
-    sending = true;
-
-    const internal = patternNum - 1;
-    const bank     = Math.floor(internal / 128);
-    const program  = internal % 128;
-
-    output.send([0xB0, 0x00, 0x00]);
-    output.send([0xB0, 0x20, bank]);
-    output.send([0xC0, program]);
-
-    setTimeout(() => { sending = false; }, 150);
-    return true;
+  // MIDI Send
+  function sendPattern(num) {
+    return new Promise((resolve, reject) => {
+      if (!midiOut) return reject(new Error('No MIDI output'));
+      const n = Math.max(1, Math.min(250, num));
+      const bank = Math.floor((n - 1) / 128);
+      const program = (n - 1) % 128;
+      try {
+        midiOut.send([0xB0, 0x00, bank]);
+        midiOut.send([0xB0, 0x20, bank]);
+        midiOut.send([0xC0, program]);
+        resolve();
+      } catch(e) {
+        reject(e);
+      }
+    });
   }
 
-  // ── Send Action ──────────────────────────────────
+  // Toast
+  function toast(msg, ok=true) {
+    $toast.textContent = msg;
+    $toast.className = 'toast show ' + (ok ? 'ok' : 'err');
+    setTimeout(() => $toast.className = 'toast', 2500);
+  }
 
-  function doSend() {
-    if (btnSend.disabled) return;
+  // Update display
+  function updateDisplay() {
+    if (input === '') {
+      $display.textContent = '---';
+      $display.className = 'pattern-num';
+      $hint.textContent = 'Tap a box, enter pattern';
+    } else {
+      const n = parseInt(input);
+      $display.textContent = n.toString().padStart(3, '0');
+      $hint.textContent = n >= 1 && n <= 250 ? 'Tap GO to send' : 'Range: 001–250';
+    }
+    $btnSend.disabled = input === '';
+    $btnDel.disabled = input === '';
+  }
 
-    const num = parseInt(currentInput, 10);
-    if (isNaN(num) || num < 1 || num > 250) {
-      flashDisplay('error');
-      vibrate(80);
-      showToast('Enter 001 — 250', 'err');
+  // Chain helpers
+  function getChainValues() {
+    return chainBoxes.map(b => {
+      const v = parseInt(b.value);
+      return isNaN(v) ? 0 : v;
+    });
+  }
+
+  function getChainPatterns() {
+    return getChainValues().filter(n => n >= 1 && n <= 250);
+  }
+
+  function updateChainControls() {
+    const patterns = getChainPatterns();
+    $btnPlay.disabled = patterns.length === 0 || isSending || chainPlaying;
+    $btnClear.disabled = patterns.length === 0 && !chainPlaying;
+    if (chainPlaying) {
+      $btnPlay.className = 'chain-btn stop';
+      $btnPlay.innerHTML = '&#9632; Stop';
+      $btnPlay.disabled = false;
+      $quick.querySelectorAll('button').forEach(b => b.disabled = true);
+      $numpad.querySelectorAll('.key').forEach(b => b.disabled = true);
+    } else {
+      $btnPlay.className = 'chain-btn play';
+      $btnPlay.innerHTML = '&#9654; Play Chain';
+      $quick.querySelectorAll('button').forEach(b => b.disabled = false);
+      $numpad.querySelectorAll('.key').forEach(b => b.disabled = false);
+    }
+    updateDisplay();
+  }
+
+  // Chain execution
+  async function runChainStep() {
+    if (chainStep >= chainBoxes.length || !chainPlaying) {
+      finishChain();
       return;
     }
 
-    const d = String(num).padStart(3, '0');
+    const box = chainBoxes[chainStep];
+    const num = parseInt(box.value);
 
-    if (sendPC(num)) {
-      flashDisplay('sending');
-      vibrate(30);
-      showToast('Pattern ' + d + ' sent', 'ok');
-      setTimeout(() => {
-        currentInput = '';
-        refreshDisplay();
-      }, 400);
-    } else {
-      showToast('Check MIDI connection', 'err');
+    if (isNaN(num) || num < 1 || num > 250) {
+      box.classList.add('done');
+      chainStep++;
+      runChainStep();
+      return;
     }
+
+    // Mark previous box as done
+    chainBoxes.forEach((b, i) => {
+      b.classList.remove('playing');
+      if (i < chainStep) b.classList.add('done');
+    });
+    box.classList.add('playing');
+    box.classList.remove('done');
+
+    // Update display
+    $display.textContent = num.toString().padStart(3, '0');
+    $display.className = 'pattern-num sending';
+
+    try {
+      await sendPattern(num);
+      $display.className = 'pattern-num';
+      toast(`Pattern ${num.toString().padStart(3,'0')} sent`);
+    } catch(e) {
+      $display.className = 'pattern-num error';
+      toast('MIDI error', false);
+      finishChain();
+      return;
+    }
+
+    // Wait ~4 seconds before next pattern
+    chainTimer = setTimeout(() => {
+      chainStep++;
+      runChainStep();
+    }, 4000);
   }
 
-  // ── Keypad Bindings ──────────────────────────────
+  function startChain() {
+    if (chainPlaying) {
+      stopChain();
+      return;
+    }
 
+    chainPlaying = true;
+    chainStep = 0;
+    chainBoxes.forEach(b => { b.classList.remove('done', 'playing'); });
+    updateChainControls();
+    runChainStep();
+  }
+
+  function stopChain() {
+    chainPlaying = false;
+    if (chainTimer) clearTimeout(chainTimer);
+    chainTimer = null;
+    chainBoxes.forEach(b => b.classList.remove('playing', 'done'));
+    updateChainControls();
+    $display.className = 'pattern-num';
+    updateDisplay();
+  }
+
+  function finishChain() {
+    chainPlaying = false;
+    if (chainTimer) clearTimeout(chainTimer);
+    chainTimer = null;
+    $display.className = 'pattern-num';
+    updateChainControls();
+    updateDisplay();
+    toast('Chain complete');
+  }
+
+  // Numpad handlers
   document.querySelectorAll('.key-num').forEach(btn => {
     btn.addEventListener('click', () => {
-      if (currentInput.length >= 3) return;
-      vibrate(15);
-      currentInput += btn.dataset.val;
-      refreshDisplay();
+      if (isSending || chainPlaying) return;
+      if (input.length >= 3) return;
+      input += btn.dataset.val;
+      const n = parseInt(input);
+      // Update selected chain box
+      if (selectedBox !== null) {
+        chainBoxes[selectedBox].value = input;
+      }
+      updateDisplay();
+      updateChainControls();
     });
   });
 
-  btnDel.addEventListener('click', () => {
-    vibrate(15);
-    currentInput = currentInput.slice(0, -1);
-    refreshDisplay();
+  $btnDel.addEventListener('click', () => {
+    if (isSending || chainPlaying) return;
+    if (input.length === 0) return;
+    input = input.slice(0, -1);
+    if (selectedBox !== null) {
+      chainBoxes[selectedBox].value = input;
+    }
+    updateDisplay();
+    updateChainControls();
   });
 
-  btnSend.addEventListener('click', doSend);
-
-  let delLong = null;
-  btnDel.addEventListener('pointerdown', () => {
-    delLong = setTimeout(() => {
-      currentInput = '';
-      refreshDisplay();
-      vibrate(40);
-    }, 500);
+  $btnSend.addEventListener('click', () => {
+    if (isSending || chainPlaying || input === '') return;
+    const num = parseInt(input);
+    if (num < 1 || num > 250) { toast('Range: 001–250', false); return; }
+    isSending = true;
+    updateDisplay();
+    sendPattern(num).then(() => {
+      $display.className = 'pattern-num';
+      isSending = false;
+      updateDisplay();
+      toast(`Pattern ${num.toString().padStart(3,'0')} sent`);
+    }).catch(e => {
+      console.error(e);
+      $display.className = 'pattern-num error';
+      isSending = false;
+      updateDisplay();
+      toast('Send failed', false);
+    });
   });
-  btnDel.addEventListener('pointerup', () => clearTimeout(delLong));
-  btnDel.addEventListener('pointercancel', () => clearTimeout(delLong));
 
+  // Quick jump
   window.jumpTo = function(n) {
-    vibrate(20);
-    currentInput = String(n);
-    refreshDisplay();
-    doSend();
+    if (chainPlaying || isSending) return;
+    input = n.toString();
+    if (selectedBox !== null) {
+      chainBoxes[selectedBox].value = input;
+    }
+    updateDisplay();
+    updateChainControls();
   };
 
-  document.addEventListener('keydown', (e) => {
-    if (e.key >= '0' && e.key <= '9' && currentInput.length < 3) {
-      currentInput += e.key;
-      refreshDisplay();
-    } else if (e.key === 'Backspace') {
-      currentInput = currentInput.slice(0, -1);
-      refreshDisplay();
-    } else if (e.key === 'Enter') {
-      e.preventDefault();
-      doSend();
-    } else if (e.key === 'Escape') {
-      currentInput = '';
-      refreshDisplay();
-    }
+  // Chain box selection
+  chainBoxes.forEach((box, i) => {
+    box.addEventListener('focus', () => {
+      selectedBox = i;
+      chainBoxes.forEach(b => b.classList.remove('selected'));
+      box.classList.add('selected');
+      const val = box.value.trim();
+      if (val && !isNaN(parseInt(val))) {
+        input = parseInt(val).toString();
+      } else {
+        input = '';
+      }
+      updateDisplay();
+      updateChainControls();
+    });
+    box.addEventListener('input', (e) => {
+      // Force numeric only
+      box.value = box.value.replace(/[^0-9]/g, '').slice(0, 3);
+      const val = parseInt(box.value);
+      if (val > 250) box.value = '250';
+    });
   });
 
-  document.addEventListener('dblclick', (e) => e.preventDefault());
+  // Chain controls
+  $btnPlay.addEventListener('click', startChain);
+  $btnClear.addEventListener('click', () => {
+    chainBoxes.forEach(b => { b.value = ''; b.classList.remove('done','playing','selected'); });
+    selectedBox = null;
+    input = '';
+    if (chainPlaying) stopChain();
+    updateDisplay();
+    updateChainControls();
+  });
 
-  initMIDI();
-})();
+  // Init
+  updateDisplay();
+  updateChainControls();
+  initMidi();
 </script>
-
 </body>
 </html>
