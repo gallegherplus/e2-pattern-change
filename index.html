@@ -165,7 +165,7 @@
   // State
   let midiAccess = null, midiOut = null, currentPC = null;
   let input = '', selectedBox = null, isSending = false;
-  let chainPlaying = false, chainStep = 0, chainTimer = null;
+  let chainPlaying = false, chainStep = 0, chainLoop = 0, chainTimer = null;
   const chainBoxes = Array.from({length:8}, (_,i) => document.getElementById('cb'+i));
 
   // Elements
@@ -312,14 +312,19 @@
 
   // Chain execution
   async function runChainStep() {
-    if (chainStep >= chainBoxes.length || !chainPlaying) {
-      finishChain();
-      return;
+    if (!chainPlaying) return;
+
+    // Loop back to start when reaching the end
+    if (chainStep >= chainBoxes.length) {
+      chainLoop++;
+      chainStep = 0;
+      chainBoxes.forEach(b => b.classList.remove('done', 'playing'));
     }
 
     const box = chainBoxes[chainStep];
     const num = parseInt(box.value);
 
+    // Skip empty/invalid boxes
     if (isNaN(num) || num < 1 || num > 250) {
       box.classList.add('done');
       chainStep++;
@@ -327,7 +332,7 @@
       return;
     }
 
-    // Mark previous box as done
+    // Mark current box as playing, previous as done
     chainBoxes.forEach((b, i) => {
       b.classList.remove('playing');
       if (i < chainStep) b.classList.add('done');
@@ -335,18 +340,19 @@
     box.classList.add('playing');
     box.classList.remove('done');
 
-    // Update display
+    // Update display with loop info
     $display.textContent = num.toString().padStart(3, '0');
     $display.className = 'pattern-num sending';
+    $hint.textContent = chainLoop > 0 ? `Loop ${chainLoop + 1} · Step ${chainStep + 1}/8` : `Step ${chainStep + 1}/8`;
 
     try {
       await sendPattern(num);
       $display.className = 'pattern-num';
-      toast(`Pattern ${num.toString().padStart(3,'0')} sent`);
+      toast(`P${num.toString().padStart(3,'0')} sent`);
     } catch(e) {
       $display.className = 'pattern-num error';
       toast('MIDI error', false);
-      finishChain();
+      stopChain();
       return;
     }
 
@@ -365,6 +371,7 @@
 
     chainPlaying = true;
     chainStep = 0;
+    chainLoop = 0;
     chainBoxes.forEach(b => { b.classList.remove('done', 'playing'); });
     updateChainControls();
     runChainStep();
@@ -374,20 +381,11 @@
     chainPlaying = false;
     if (chainTimer) clearTimeout(chainTimer);
     chainTimer = null;
+    chainLoop = 0;
     chainBoxes.forEach(b => b.classList.remove('playing', 'done'));
     updateChainControls();
     $display.className = 'pattern-num';
     updateDisplay();
-  }
-
-  function finishChain() {
-    chainPlaying = false;
-    if (chainTimer) clearTimeout(chainTimer);
-    chainTimer = null;
-    $display.className = 'pattern-num';
-    updateChainControls();
-    updateDisplay();
-    toast('Chain complete');
   }
 
   // Numpad handlers
