@@ -2,311 +2,572 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Electribe 2 - Pattern Change</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0a0a">
+<title>Electribe 2 — Pattern Change</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --orange: #ff6b35;
+    --orange-dim: #cc5529;
+    --bg: #0a0a0a;
+    --surface: #111;
+    --border: #222;
+    --text: #e0e0e0;
+    --muted: #555;
+    --green: #4caf50;
+    --red: #ff3333;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    height: 100%;
+    overflow: hidden;
+  }
 
   body {
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    background: #0a0a0a;
-    color: #e0e0e0;
-    min-height: 100dvh;
+    font-family: 'SF Pro Display', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  /* ── Header ─────────────────────────────────────── */
+
+  .header {
+    text-align: center;
+    padding: 20px 16px 0;
+    flex-shrink: 0;
+  }
+
+  .header h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--orange);
+  }
+
+  .header .sub {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-top: 2px;
+  }
+
+  /* ── Connection ─────────────────────────────────── */
+
+  .conn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 0.65rem;
+    letter-spacing: 1px;
+    transition: all 0.3s;
+  }
+
+  .conn .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--muted);
+    transition: background 0.3s;
+  }
+
+  .conn.ok { background: rgba(76, 175, 80, 0.1); }
+  .conn.ok .dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .conn.err { background: rgba(255, 51, 51, 0.1); }
+  .conn.err .dot { background: var(--red); }
+
+  .conn .name {
+    color: var(--muted);
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ── Display ────────────────────────────────────── */
+
+  .display {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 20px;
-    touch-action: manipulation;
+    padding: 0 20px;
+    min-height: 0;
   }
 
-  h1 {
-    font-size: 1.4rem;
-    font-weight: 300;
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: #ff6b35;
-    margin-bottom: 6px;
-  }
-
-  .subtitle {
-    font-size: 0.75rem;
-    color: #666;
-    letter-spacing: 2px;
-    margin-bottom: 40px;
-  }
-
-  .input-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 16px;
-    width: 100%;
-    max-width: 320px;
-  }
-
-  #pattern-input {
-    width: 100%;
-    font-size: 3rem;
+  .pattern-num {
+    font-size: clamp(4rem, 18vw, 7rem);
     font-weight: 700;
-    text-align: center;
-    background: #111;
-    border: 2px solid #333;
-    border-radius: 12px;
-    color: #ff6b35;
-    padding: 16px;
-    outline: none;
-    caret-color: #ff6b35;
-    letter-spacing: 8px;
-    transition: border-color 0.2s;
+    font-variant-numeric: tabular-nums;
+    color: var(--orange);
+    letter-spacing: 0.1em;
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(255, 107, 53, 0.15);
+    min-height: 1.2em;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s;
   }
 
-  #pattern-input:focus {
-    border-color: #ff6b35;
+  .pattern-num.sending {
+    color: var(--green);
   }
 
-  #pattern-input.error {
-    border-color: #ff3333;
+  .pattern-num.error {
+    color: var(--red);
     animation: shake 0.3s;
   }
 
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    75% { transform: translateX(6px); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
   }
 
-  .hint {
-    font-size: 0.7rem;
-    color: #555;
-    letter-spacing: 1px;
-  }
-
-  #send-btn {
-    width: 100%;
-    padding: 16px;
-    font-size: 1rem;
-    font-weight: 600;
-    letter-spacing: 3px;
+  .send-hint {
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-top: 6px;
     text-transform: uppercase;
-    background: #ff6b35;
-    color: #0a0a0a;
+  }
+
+  /* ── Numpad ─────────────────────────────────────── */
+
+  .numpad {
+    padding: 8px 12px 24px;
+    flex-shrink: 0;
+  }
+
+  .numpad-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .key {
+    height: 56px;
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
+    font-size: 1.4rem;
+    font-weight: 500;
+    font-family: inherit;
     cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.08s, background 0.1s;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  #send-btn:active {
-    transform: scale(0.97);
-    background: #e55a2b;
+  .key:active {
+    transform: scale(0.93);
   }
 
-  #send-btn:disabled {
-    background: #333;
-    color: #666;
+  .key-num {
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .key-num:active {
+    background: #1a1a1a;
+  }
+
+  .key-del {
+    background: var(--surface);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    font-size: 1.1rem;
+  }
+
+  .key-del:active {
+    background: #1a1a1a;
+  }
+
+  .key-send {
+    background: var(--orange);
+    color: #0a0a0a;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: none;
+  }
+
+  .key-send:active {
+    background: var(--orange-dim);
+  }
+
+  .key-send:disabled {
+    background: #1a1a1a;
+    color: #333;
     cursor: not-allowed;
   }
 
-  .status {
-    margin-top: 30px;
-    font-size: 0.7rem;
-    color: #555;
+  .key-send:disabled:active {
+    transform: none;
+  }
+
+  .key-clear {
+    background: transparent;
+    color: var(--muted);
+    font-size: 0.75rem;
     letter-spacing: 1px;
-    text-align: center;
+    border: 1px solid var(--border);
   }
 
-  #status-msg {
-    min-height: 1.2em;
-    transition: color 0.3s;
+  .key-clear:active {
+    background: var(--surface);
   }
 
-  #status-msg.ok { color: #4caf50; }
-  #status-msg.err { color: #ff3333; }
-  #status-msg.info { color: #ff6b35; }
+  /* ── Toast ──────────────────────────────────────── */
 
-  .device-info {
-    margin-top: 12px;
-    font-size: 0.65rem;
-    color: #444;
-    text-align: center;
-    word-break: break-all;
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 1px;
+    pointer-events: none;
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index: 100;
   }
 
-  .last-sent {
-    margin-top: 24px;
-    font-size: 0.65rem;
-    color: #333;
-    text-align: center;
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  .toast.ok {
+    background: rgba(76, 175, 80, 0.9);
+    color: #fff;
+  }
+
+  .toast.err {
+    background: rgba(255, 51, 51, 0.9);
+    color: #fff;
+  }
+
+  /* ── Quick jumps ────────────────────────────────── */
+
+  .quick {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 0 12px 6px;
+    flex-shrink: 0;
+  }
+
+  .quick button {
+    padding: 6px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 0.6rem;
+    font-family: inherit;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+
+  .quick button:active {
+    background: #1a1a1a;
+    color: var(--text);
+  }
+
+  .quick button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
   }
 </style>
 </head>
 <body>
 
-  <h1>Electribe 2</h1>
-  <div class="subtitle">Pattern Change via USB MIDI</div>
-
-  <div class="input-group">
-    <input
-      type="text"
-      id="pattern-input"
-      inputmode="numeric"
-      pattern="[0-9]*"
-      maxlength="3"
-      placeholder="001"
-      autofocus
-    >
-    <div class="hint">Pattern 001 — 250</div>
-    <button id="send-btn" disabled>Send</button>
+  <div class="header">
+    <h1>Electribe 2</h1>
+    <div class="sub">Pattern Change — USB MIDI</div>
+    <div class="conn" id="conn">
+      <div class="dot"></div>
+      <span class="name" id="conn-name">Connecting...</span>
+    </div>
   </div>
 
-  <div class="status">
-    <div id="status-msg" class="info">Connecting to MIDI device...</div>
-    <div id="device-name" class="device-info"></div>
+  <div class="display">
+    <div class="pattern-num" id="display">---</div>
+    <div class="send-hint" id="send-hint">Tap a number</div>
   </div>
 
-  <div class="last-sent" id="last-sent"></div>
+  <div class="quick" id="quick">
+    <button onclick="jumpTo(1)">001</button>
+    <button onclick="jumpTo(33)">033</button>
+    <button onclick="jumpTo(65)">065</button>
+    <button onclick="jumpTo(97)">097</button>
+    <button onclick="jumpTo(129)">129</button>
+    <button onclick="jumpTo(200)">200</button>
+  </div>
+
+  <div class="numpad">
+    <div class="numpad-grid">
+      <button class="key key-num" data-val="1">1</button>
+      <button class="key key-num" data-val="2">2</button>
+      <button class="key key-num" data-val="3">3</button>
+      <button class="key key-num" data-val="4">4</button>
+      <button class="key key-num" data-val="5">5</button>
+      <button class="key key-num" data-val="6">6</button>
+      <button class="key key-num" data-val="7">7</button>
+      <button class="key key-num" data-val="8">8</button>
+      <button class="key key-num" data-val="9">9</button>
+      <button class="key key-del" id="btn-del">⌫</button>
+      <button class="key key-num" data-val="0">0</button>
+      <button class="key key-send" id="btn-send" disabled>GO</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
 
 <script>
 (function () {
-  const input = document.getElementById('pattern-input');
-  const sendBtn = document.getElementById('send-btn');
-  const statusMsg = document.getElementById('status-msg');
-  const deviceName = document.getElementById('device-name');
-  const lastSent = document.getElementById('last-sent');
+  // ── DOM ──────────────────────────────────────────
+  const display    = document.getElementById('display');
+  const sendHint   = document.getElementById('send-hint');
+  const connEl     = document.getElementById('conn');
+  const connName   = document.getElementById('conn-name');
+  const btnDel     = document.getElementById('btn-del');
+  const btnSend    = document.getElementById('btn-send');
+  const toastEl    = document.getElementById('toast');
+  const quickBar   = document.getElementById('quick');
 
-  let midiAccess = null;
-  let electribeOutput = null;
+  // ── State ────────────────────────────────────────
+  let currentInput = '';
+  let midiAccess   = null;
+  let output       = null;
+  let sending      = false;
 
-  // ── MIDI Setup ──────────────────────────────────────────────
+  // ── Display ──────────────────────────────────────
+
+  function refreshDisplay() {
+    if (currentInput === '') {
+      display.textContent = '---';
+      display.className = 'pattern-num';
+      sendHint.textContent = 'Tap a number';
+      btnSend.disabled = true;
+    } else {
+      const num = parseInt(currentInput, 10);
+      display.textContent = String(num).padStart(3, '0');
+      display.className = 'pattern-num';
+      if (num >= 1 && num <= 250) {
+        sendHint.textContent = 'Tap GO to send';
+        btnSend.disabled = false;
+      } else {
+        sendHint.textContent = 'Range: 001 — 250';
+        btnSend.disabled = true;
+      }
+    }
+  }
+
+  function flashDisplay(cls) {
+    display.className = 'pattern-num ' + cls;
+  }
+
+  // ── Toast ────────────────────────────────────────
+
+  let toastTimer = null;
+  function showToast(msg, type) {
+    toastEl.textContent = msg;
+    toastEl.className = 'toast ' + type + ' show';
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { toastEl.className = 'toast'; }, 2000);
+  }
+
+  // ── Vibrate ──────────────────────────────────────
+
+  function vibrate(ms) {
+    if (navigator.vibrate) navigator.vibrate(ms);
+  }
+
+  // ── MIDI ─────────────────────────────────────────
 
   async function initMIDI() {
     if (!navigator.requestMIDIAccess) {
-      setStatus('Web MIDI not supported in this browser', 'err');
+      connEl.className = 'conn err';
+      connName.textContent = 'Web MIDI not supported';
       return;
     }
-
     try {
       midiAccess = await navigator.requestMIDIAccess({ sysex: false });
-      midiAccess.onstatechange = onPortChange;
-      findElectribe();
-    } catch (e) {
-      setStatus('MIDI access denied', 'err');
+      midiAccess.onstatechange = () => findDevice();
+      findDevice();
+    } catch {
+      connEl.className = 'conn err';
+      connName.textContent = 'MIDI access denied';
     }
   }
 
-  function findElectribe() {
-    electribeOutput = null;
-
-    for (const [id, port] of midiAccess.outputs) {
-      const name = port.name.toLowerCase();
-      if (
-        name.includes('electribe') ||
-        name.includes('korg') ||
-        name.includes('electribe2')
-      ) {
-        electribeOutput = port;
+  function findDevice() {
+    output = null;
+    for (const [, port] of midiAccess.outputs) {
+      const n = port.name.toLowerCase();
+      if (n.includes('electribe') || n.includes('korg')) {
+        output = port;
         break;
       }
     }
-
-    if (electribeOutput) {
-      sendBtn.disabled = false;
-      setStatus('Connected', 'ok');
-      deviceName.textContent = electribeOutput.name;
-      input.focus();
+    if (output) {
+      connEl.className = 'conn ok';
+      connName.textContent = output.name;
+      refreshDisplay();
+      quickBar.querySelectorAll('button').forEach(b => b.disabled = false);
     } else {
-      sendBtn.disabled = true;
-      setStatus('Electribe 2 not found', 'err');
-      deviceName.textContent = 'Connect via USB and open Chrome flags';
+      connEl.className = 'conn err';
+      connName.textContent = 'Connect Electribe 2 via USB';
+      btnSend.disabled = true;
+      quickBar.querySelectorAll('button').forEach(b => b.disabled = true);
 
-      // List available outputs for debug
-      let list = '';
-      for (const [id, port] of midiAccess.outputs) {
-        list += port.name + ' | ';
-      }
-      if (list) deviceName.textContent += '\nDevices: ' + list;
+      // Show available devices for debug
+      const devs = [];
+      for (const [, p] of midiAccess.outputs) devs.push(p.name);
+      if (devs.length) connName.textContent += ' — Found: ' + devs.join(', ');
     }
   }
 
-  function onPortChange(e) {
-    if (e.port.type === 'output') {
-      findElectribe();
-    }
-  }
+  // ── Send MIDI ────────────────────────────────────
 
-  // ── Program Change Send ─────────────────────────────────────
+  function sendPC(patternNum) {
+    if (!output || sending) return false;
+    sending = true;
 
-  function sendProgramChange(patternNum) {
-    if (!electribeOutput) return false;
+    const internal = patternNum - 1;      // 0-249
+    const bank     = Math.floor(internal / 128); // 0 or 1
+    const program  = internal % 128;       // 0-127
 
-    // Electribe 2 has 250 patterns
-    // MIDI Program Change is 0-indexed (0-127 per bank)
-    // Banks accessed via Bank Select CC0 (MSB) and CC32 (LSB)
-    const internal = patternNum - 1; // 0-249
-    const bank = Math.floor(internal / 128); // 0 or 1
-    const program = internal % 128; // 0-127
+    // Bank Select MSB (CC0) always 0
+    output.send([0xB0, 0x00, 0x00]);
+    // Bank Select LSB (CC32) = bank index
+    output.send([0xB0, 0x20, bank]);
+    // Program Change
+    output.send([0xC0, program]);
 
-    // Electribe 2 bank mapping:
-    // Bank 0 (patterns 1-128):  CC0=0, CC32=0
-    // Bank 1 (patterns 129-250): CC0=0, CC32=1
-
-    electribeOutput.send([0xB0, 0x00, 0x00]);       // CC0 Bank Select MSB = 0
-    electribeOutput.send([0xB0, 0x20, bank]);         // CC32 Bank Select LSB = bank
-    electribeOutput.send([0xC0, program]);             // Program Change
-
+    setTimeout(() => { sending = false; }, 150);
     return true;
   }
 
-  // ── Input Handling ──────────────────────────────────────────
+  // ── Send Action ──────────────────────────────────
 
-  function handleSend() {
-    const raw = input.value.trim();
-    const num = parseInt(raw, 10);
+  function doSend() {
+    if (btnSend.disabled) return;
 
+    const num = parseInt(currentInput, 10);
     if (isNaN(num) || num < 1 || num > 250) {
-      input.classList.add('error');
-      setStatus('Enter 001 — 250', 'err');
-      setTimeout(() => input.classList.remove('error'), 400);
+      flashDisplay('error');
+      vibrate(80);
+      showToast('Enter 001 — 250', 'err');
       return;
     }
 
-    const display = String(num).padStart(3, '0');
+    const display_ = String(num).padStart(3, '0');
 
-    if (sendProgramChange(num)) {
-      setStatus('Sent: ' + display, 'ok');
-      lastSent.textContent = 'Last: Pattern ' + display;
-      input.value = '';
-      input.focus();
+    if (sendPC(num)) {
+      flashDisplay('sending');
+      vibrate(30);
+      showToast('Pattern ' + display_ + ' sent', 'ok');
+      setTimeout(() => {
+        currentInput = '';
+        refreshDisplay();
+      }, 400);
     } else {
-      setStatus('Send failed — check connection', 'err');
+      showToast('Check MIDI connection', 'err');
     }
   }
 
-  // Send on Enter key
-  input.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') {
+  // ── Keypad Bindings ──────────────────────────────
+
+  document.querySelectorAll('.key-num').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (currentInput.length >= 3) return;
+      vibrate(15);
+      currentInput += btn.dataset.val;
+      refreshDisplay();
+    });
+  });
+
+  btnDel.addEventListener('click', () => {
+    vibrate(15);
+    currentInput = currentInput.slice(0, -1);
+    refreshDisplay();
+  });
+
+  btnSend.addEventListener('click', doSend);
+
+  // Clear on long-press del
+  let delLong = null;
+  btnDel.addEventListener('pointerdown', () => {
+    delLong = setTimeout(() => {
+      currentInput = '';
+      refreshDisplay();
+      vibrate(40);
+    }, 500);
+  });
+  btnDel.addEventListener('pointerup', () => clearTimeout(delLong));
+  btnDel.addEventListener('pointercancel', () => clearTimeout(delLong));
+
+  // ── Quick Jumps ──────────────────────────────────
+
+  window.jumpTo = function(n) {
+    vibrate(20);
+    currentInput = String(n);
+    refreshDisplay();
+    doSend();
+  };
+
+  // ── Physical keyboard support ────────────────────
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key >= '0' && e.key <= '9' && currentInput.length < 3) {
+      currentInput += e.key;
+      refreshDisplay();
+    } else if (e.key === 'Backspace') {
+      currentInput = currentInput.slice(0, -1);
+      refreshDisplay();
+    } else if (e.key === 'Enter') {
       e.preventDefault();
-      handleSend();
+      doSend();
+    } else if (e.key === 'Escape') {
+      currentInput = '';
+      refreshDisplay();
     }
   });
 
-  // Send on button tap
-  sendBtn.addEventListener('click', handleSend);
+  // ── Prevent double-tap zoom on mobile ────────────
+  document.addEventListener('dblclick', (e) => e.preventDefault());
 
-  // Only allow digits in input
-  input.addEventListener('input', function () {
-    this.value = this.value.replace(/[^0-9]/g, '');
-  });
-
-  // ── Helpers ─────────────────────────────────────────────────
-
-  function setStatus(msg, type) {
-    statusMsg.textContent = msg;
-    statusMsg.className = type || '';
-  }
-
-  // ── Boot ────────────────────────────────────────────────────
+  // ── Boot ─────────────────────────────────────────
   initMIDI();
 
 })();
