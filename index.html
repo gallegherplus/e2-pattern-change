@@ -311,31 +311,35 @@
   }
 
   // Chain execution
+  function getValidSteps() {
+    return chainBoxes.reduce((acc, box, i) => {
+      const num = parseInt(box.value);
+      if (!isNaN(num) && num >= 1 && num <= 250) acc.push(i);
+      return acc;
+    }, []);
+  }
+
   async function runChainStep() {
     if (!chainPlaying) return;
 
+    const steps = getValidSteps();
+    if (steps.length === 0) { stopChain(); return; }
+
     // Loop back to start when reaching the end
-    if (chainStep >= chainBoxes.length) {
+    if (chainStep >= steps.length) {
       chainLoop++;
       chainStep = 0;
       chainBoxes.forEach(b => b.classList.remove('done', 'playing'));
     }
 
-    const box = chainBoxes[chainStep];
+    const boxIdx = steps[chainStep];
+    const box = chainBoxes[boxIdx];
     const num = parseInt(box.value);
-
-    // Skip empty/invalid boxes
-    if (isNaN(num) || num < 1 || num > 250) {
-      box.classList.add('done');
-      chainStep++;
-      runChainStep();
-      return;
-    }
 
     // Mark current box as playing, previous as done
     chainBoxes.forEach((b, i) => {
       b.classList.remove('playing');
-      if (i < chainStep) b.classList.add('done');
+      if (steps.indexOf(i) !== -1 && steps.indexOf(i) < chainStep) b.classList.add('done');
     });
     box.classList.add('playing');
     box.classList.remove('done');
@@ -343,7 +347,8 @@
     // Update display with loop info
     $display.textContent = num.toString().padStart(3, '0');
     $display.className = 'pattern-num sending';
-    $hint.textContent = chainLoop > 0 ? `Loop ${chainLoop + 1} · Step ${chainStep + 1}/8` : `Step ${chainStep + 1}/8`;
+    const total = steps.length;
+    $hint.textContent = chainLoop > 0 ? `Loop ${chainLoop + 1} · ${chainStep + 1}/${total}` : `${chainStep + 1}/${total}`;
 
     try {
       await sendPattern(num);
