@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Electribe 2 - Pattern Change</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: #0a0a0a;
+    color: #e0e0e0;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    touch-action: manipulation;
+  }
+
+  h1 {
+    font-size: 1.4rem;
+    font-weight: 300;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #ff6b35;
+    margin-bottom: 6px;
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+    color: #666;
+    letter-spacing: 2px;
+    margin-bottom: 40px;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  #pattern-input {
+    width: 100%;
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+    background: #111;
+    border: 2px solid #333;
+    border-radius: 12px;
+    color: #ff6b35;
+    padding: 16px;
+    outline: none;
+    caret-color: #ff6b35;
+    letter-spacing: 8px;
+    transition: border-color 0.2s;
+  }
+
+  #pattern-input:focus {
+    border-color: #ff6b35;
+  }
+
+  #pattern-input.error {
+    border-color: #ff3333;
+    animation: shake 0.3s;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .hint {
+    font-size: 0.7rem;
+    color: #555;
+    letter-spacing: 1px;
+  }
+
+  #send-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: #ff6b35;
+    color: #0a0a0a;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  #send-btn:active {
+    transform: scale(0.97);
+    background: #e55a2b;
+  }
+
+  #send-btn:disabled {
+    background: #333;
+    color: #666;
+    cursor: not-allowed;
+  }
+
+  .status {
+    margin-top: 30px;
+    font-size: 0.7rem;
+    color: #555;
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  #status-msg {
+    min-height: 1.2em;
+    transition: color 0.3s;
+  }
+
+  #status-msg.ok { color: #4caf50; }
+  #status-msg.err { color: #ff3333; }
+  #status-msg.info { color: #ff6b35; }
+
+  .device-info {
+    margin-top: 12px;
+    font-size: 0.65rem;
+    color: #444;
+    text-align: center;
+    word-break: break-all;
+  }
+
+  .last-sent {
+    margin-top: 24px;
+    font-size: 0.65rem;
+    color: #333;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+  <h1>Electribe 2</h1>
+  <div class="subtitle">Pattern Change via USB MIDI</div>
+
+  <div class="input-group">
+    <input
+      type="text"
+      id="pattern-input"
+      inputmode="numeric"
+      pattern="[0-9]*"
+      maxlength="3"
+      placeholder="001"
+      autofocus
+    >
+    <div class="hint">Pattern 001 — 250</div>
+    <button id="send-btn" disabled>Send</button>
+  </div>
+
+  <div class="status">
+    <div id="status-msg" class="info">Connecting to MIDI device...</div>
+    <div id="device-name" class="device-info"></div>
+  </div>
+
+  <div class="last-sent" id="last-sent"></div>
+
+<script>
+(function () {
+  const input = document.getElementById('pattern-input');
+  const sendBtn = document.getElementById('send-btn');
+  const statusMsg = document.getElementById('status-msg');
+  const deviceName = document.getElementById('device-name');
+  const lastSent = document.getElementById('last-sent');
+
+  let midiAccess = null;
+  let electribeOutput = null;
+
+  // ── MIDI Setup ──────────────────────────────────────────────
+
+  async function initMIDI() {
+    if (!navigator.requestMIDIAccess) {
+      setStatus('Web MIDI not supported in this browser', 'err');
+      return;
+    }
+
+    try {
+      midiAccess = await navigator.requestMIDIAccess({ sysex: false });
+      midiAccess.onstatechange = onPortChange;
+      findElectribe();
+    } catch (e) {
+      setStatus('MIDI access denied', 'err');
+    }
+  }
+
+  function findElectribe() {
+    electribeOutput = null;
+
+    for (const [id, port] of midiAccess.outputs) {
+      const name = port.name.toLowerCase();
+      if (
+        name.includes('electribe') ||
+        name.includes('korg') ||
+        name.includes('electribe2')
+      ) {
+        electribeOutput = port;
+        break;
+      }
+    }
+
+    if (electribeOutput) {
+      sendBtn.disabled = false;
+      setStatus('Connected', 'ok');
+      deviceName.textContent = electribeOutput.name;
+      input.focus();
+    } else {
+      sendBtn.disabled = true;
+      setStatus('Electribe 2 not found', 'err');
+      deviceName.textContent = 'Connect via USB and open Chrome flags';
+
+      // List available outputs for debug
+      let list = '';
+      for (const [id, port] of midiAccess.outputs) {
+        list += port.name + ' | ';
+      }
+      if (list) deviceName.textContent += '\nDevices: ' + list;
+    }
+  }
+
+  function onPortChange(e) {
+    if (e.port.type === 'output') {
+      findElectribe();
+    }
+  }
+
+  // ── Program Change Send ─────────────────────────────────────
+
+  function sendProgramChange(patternNum) {
+    if (!electribeOutput) return false;
+
+    // Pattern numbers are 1-250 on the display
+    // Internal: 0-249
+    const internal = patternNum - 1;
+
+    // Bank select for patterns > 127
+    const bank = Math.floor(internal / 128);
+    const program = internal % 128;
+
+    // Bank Select MSB (CC 0)
+    electribeOutput.send([0xB0, 0x00, bank]);
+    // Bank Select LSB (CC 32)
+    electribeOutput.send([0xB0, 0x20, 0x00]);
+    // Program Change
+    electribeOutput.send([0xC0, program]);
+
+    return true;
+  }
+
+  // ── Input Handling ──────────────────────────────────────────
+
+  function handleSend() {
+    const raw = input.value.trim();
+    const num = parseInt(raw, 10);
+
+    if (isNaN(num) || num < 1 || num > 250) {
+      input.classList.add('error');
+      setStatus('Enter 001 — 250', 'err');
+      setTimeout(() => input.classList.remove('error'), 400);
+      return;
+    }
+
+    const display = String(num).padStart(3, '0');
+
+    if (sendProgramChange(num)) {
+      setStatus('Sent: ' + display, 'ok');
+      lastSent.textContent = 'Last: Pattern ' + display;
+      input.value = '';
+      input.focus();
+    } else {
+      setStatus('Send failed — check connection', 'err');
+    }
+  }
+
+  // Send on Enter key
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSend();
+    }
+  });
+
+  // Send on button tap
+  sendBtn.addEventListener('click', handleSend);
+
+  // Only allow digits in input
+  input.addEventListener('input', function () {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+
+  // ── Helpers ─────────────────────────────────────────────────
+
+  function setStatus(msg, type) {
+    statusMsg.textContent = msg;
+    statusMsg.className = type || '';
+  }
+
+  // ── Boot ────────────────────────────────────────────────────
+  initMIDI();
+
+})();
+</script>
+
+</body>
+</html>
