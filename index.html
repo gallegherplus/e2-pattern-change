@@ -76,6 +76,19 @@
   .chain-btn.stop { background: var(--red); color: #fff; border: none; }
   .chain-btn.stop:active { background: #cc2222; }
 
+  /* Chain cell wrapper */
+  .chain-cell { display: flex; flex-direction: column; align-items: center; gap: 2px; flex: 1; max-width: 50px; }
+  .chain-rep {
+    width: 100%; height: 18px; max-width: 46px;
+    border: 1px solid var(--border); border-radius: 4px;
+    background: var(--surface); color: var(--muted);
+    font-size: 0.55rem; font-weight: 500; font-family: inherit;
+    text-align: center; outline: none; cursor: pointer;
+    -webkit-appearance: none; padding: 0;
+  }
+  .chain-rep:focus { border-color: var(--orange); color: var(--text); }
+  .chain-rep::placeholder { color: #333; font-size: 0.5rem; }
+
   /* Bottom */
   .bottom { flex-shrink: 0; padding: 0 10px 20px; }
 
@@ -121,14 +134,14 @@
 
   <div class="chain-section">
     <div class="chain-row" id="chain-row">
-      <input class="chain-box" id="cb0" type="text" inputmode="numeric" maxlength="3" placeholder="---">
-      <input class="chain-box" id="cb1" type="text" inputmode="numeric" maxlength="3" placeholder="---">
-      <input class="chain-box" id="cb2" type="text" inputmode="numeric" maxlength="3" placeholder="---">
-      <input class="chain-box" id="cb3" type="text" inputmode="numeric" maxlength="3" placeholder="---">
-      <input class="chain-box" id="cb4" type="text" inputmode="numeric" maxlength="3" placeholder="---">
-      <input class="chain-box" id="cb5" type="text" inputmode="numeric" maxlength="3" placeholder="---">
-      <input class="chain-box" id="cb6" type="text" inputmode="numeric" maxlength="3" placeholder="---">
-      <input class="chain-box" id="cb7" type="text" inputmode="numeric" maxlength="3" placeholder="---">
+      <div class="chain-cell"><input class="chain-box" id="cb0" type="text" inputmode="numeric" maxlength="3" placeholder="---"><input class="chain-rep" id="cr0" type="text" inputmode="numeric" maxlength="2" placeholder="×1"></div>
+      <div class="chain-cell"><input class="chain-box" id="cb1" type="text" inputmode="numeric" maxlength="3" placeholder="---"><input class="chain-rep" id="cr1" type="text" inputmode="numeric" maxlength="2" placeholder="×1"></div>
+      <div class="chain-cell"><input class="chain-box" id="cb2" type="text" inputmode="numeric" maxlength="3" placeholder="---"><input class="chain-rep" id="cr2" type="text" inputmode="numeric" maxlength="2" placeholder="×1"></div>
+      <div class="chain-cell"><input class="chain-box" id="cb3" type="text" inputmode="numeric" maxlength="3" placeholder="---"><input class="chain-rep" id="cr3" type="text" inputmode="numeric" maxlength="2" placeholder="×1"></div>
+      <div class="chain-cell"><input class="chain-box" id="cb4" type="text" inputmode="numeric" maxlength="3" placeholder="---"><input class="chain-rep" id="cr4" type="text" inputmode="numeric" maxlength="2" placeholder="×1"></div>
+      <div class="chain-cell"><input class="chain-box" id="cb5" type="text" inputmode="numeric" maxlength="3" placeholder="---"><input class="chain-rep" id="cr5" type="text" inputmode="numeric" maxlength="2" placeholder="×1"></div>
+      <div class="chain-cell"><input class="chain-box" id="cb6" type="text" inputmode="numeric" maxlength="3" placeholder="---"><input class="chain-rep" id="cr6" type="text" inputmode="numeric" maxlength="2" placeholder="×1"></div>
+      <div class="chain-cell"><input class="chain-box" id="cb7" type="text" inputmode="numeric" maxlength="3" placeholder="---"><input class="chain-rep" id="cr7" type="text" inputmode="numeric" maxlength="2" placeholder="×1"></div>
     </div>
     <div class="chain-controls">
       <button class="chain-btn play" id="btn-play" disabled>&#9654; Play Chain</button>
@@ -165,8 +178,9 @@
   // State
   let midiAccess = null, midiOut = null, currentPC = null;
   let input = '', selectedBox = null, isSending = false;
-  let chainPlaying = false, chainStep = 0, chainLoop = 0, chainTimer = null;
+  let chainPlaying = false, chainStep = 0, chainLoop = 0, chainRepeat = 0, chainTimer = null;
   const chainBoxes = Array.from({length:8}, (_,i) => document.getElementById('cb'+i));
+  const chainReps = Array.from({length:8}, (_,i) => document.getElementById('cr'+i));
 
   // Elements
   const $display = document.getElementById('display');
@@ -311,6 +325,11 @@
   }
 
   // Chain execution
+  function getChainReps(idx) {
+    const v = parseInt(chainReps[idx].value);
+    return (isNaN(v) || v < 1) ? 1 : Math.min(v, 99);
+  }
+
   function getValidSteps() {
     return chainBoxes.reduce((acc, box, i) => {
       const num = parseInt(box.value);
@@ -329,12 +348,14 @@
     if (chainStep >= steps.length) {
       chainLoop++;
       chainStep = 0;
+      chainRepeat = 0;
       chainBoxes.forEach(b => b.classList.remove('done', 'playing'));
     }
 
     const boxIdx = steps[chainStep];
     const box = chainBoxes[boxIdx];
     const num = parseInt(box.value);
+    const reps = getChainReps(boxIdx);
 
     // Mark current box as playing, previous as done
     chainBoxes.forEach((b, i) => {
@@ -344,11 +365,14 @@
     box.classList.add('playing');
     box.classList.remove('done');
 
-    // Update display with loop info
+    // Update display
     $display.textContent = num.toString().padStart(3, '0');
     $display.className = 'pattern-num sending';
     const total = steps.length;
-    $hint.textContent = chainLoop > 0 ? `Loop ${chainLoop + 1} · ${chainStep + 1}/${total}` : `${chainStep + 1}/${total}`;
+    const repTxt = reps > 1 ? ` · rep ${chainRepeat + 1}/${reps}` : '';
+    $hint.textContent = chainLoop > 0
+      ? `Loop ${chainLoop + 1} · ${chainStep + 1}/${total}${repTxt}`
+      : `${chainStep + 1}/${total}${repTxt}`;
 
     try {
       await sendPattern(num);
@@ -363,7 +387,12 @@
 
     // Wait ~4 seconds before next pattern
     chainTimer = setTimeout(() => {
-      chainStep++;
+      chainRepeat++;
+      if (chainRepeat >= reps) {
+        // Done with this step's repeats, move to next
+        chainRepeat = 0;
+        chainStep++;
+      }
       runChainStep();
     }, 4000);
   }
@@ -377,6 +406,7 @@
     chainPlaying = true;
     chainStep = 0;
     chainLoop = 0;
+    chainRepeat = 0;
     chainBoxes.forEach(b => { b.classList.remove('done', 'playing'); });
     updateChainControls();
     runChainStep();
@@ -386,11 +416,9 @@
     chainPlaying = false;
     if (chainTimer) clearTimeout(chainTimer);
     chainTimer = null;
-    chainLoop = 0;
-    chainBoxes.forEach(b => b.classList.remove('playing', 'done'));
+    // Keep last pattern visible on display
+    chainBoxes.forEach(b => b.classList.remove('playing'));
     updateChainControls();
-    $display.className = 'pattern-num';
-    updateDisplay();
   }
 
   // Numpad handlers
@@ -478,6 +506,7 @@
   $btnPlay.addEventListener('click', startChain);
   $btnClear.addEventListener('click', () => {
     chainBoxes.forEach(b => { b.value = ''; b.classList.remove('done','playing','selected'); });
+    chainReps.forEach(r => { r.value = ''; });
     selectedBox = null;
     input = '';
     if (chainPlaying) stopChain();
