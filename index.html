@@ -12,10 +12,10 @@
     --orange: #ff6b35;
     --orange-dim: #cc5529;
     --bg: #0a0a0a;
-    --surface: #111;
-    --border: #222;
+    --surface: #151515;
+    --border: #282828;
     --text: #e0e0e0;
-    --muted: #555;
+    --muted: #666;
     --green: #4caf50;
     --red: #ff3333;
   }
@@ -41,48 +41,49 @@
   /* ── Header ─────────────────────────────────────── */
 
   .header {
-    text-align: center;
-    padding: 20px 16px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px 0;
     flex-shrink: 0;
   }
 
-  .header h1 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    letter-spacing: 5px;
+  .header-left {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header-left h1 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 3px;
     text-transform: uppercase;
     color: var(--orange);
   }
 
-  .header .sub {
-    font-size: 0.6rem;
+  .header-left .sub {
+    font-size: 0.55rem;
     color: var(--muted);
-    letter-spacing: 2px;
-    margin-top: 2px;
+    letter-spacing: 1.5px;
+    margin-top: 1px;
   }
-
-  /* ── Connection ─────────────────────────────────── */
 
   .conn {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 10px;
-    padding: 6px 14px;
-    border-radius: 20px;
-    width: fit-content;
-    margin-left: auto;
-    margin-right: auto;
-    font-size: 0.65rem;
-    letter-spacing: 1px;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 16px;
+    font-size: 0.55rem;
+    letter-spacing: 0.5px;
     transition: all 0.3s;
   }
 
   .conn .dot {
-    width: 7px; height: 7px;
+    width: 6px; height: 6px;
     border-radius: 50%;
     background: var(--muted);
+    flex-shrink: 0;
     transition: background 0.3s;
   }
 
@@ -93,7 +94,7 @@
 
   .conn .name {
     color: var(--muted);
-    max-width: 180px;
+    max-width: 120px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -109,25 +110,21 @@
     justify-content: center;
     padding: 0 20px;
     min-height: 0;
+    gap: 4px;
   }
 
   .pattern-num {
-    font-size: clamp(4rem, 18vw, 7rem);
-    font-weight: 700;
+    font-size: clamp(5rem, 28vw, 10rem);
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
     color: var(--orange);
-    letter-spacing: 0.1em;
+    letter-spacing: 0.05em;
     line-height: 1;
-    text-shadow: 0 0 30px rgba(255, 107, 53, 0.15);
-    min-height: 1.2em;
-    display: flex;
-    align-items: center;
+    text-shadow: 0 0 40px rgba(255, 107, 53, 0.2);
     transition: color 0.15s;
   }
 
-  .pattern-num.sending {
-    color: var(--green);
-  }
+  .pattern-num.sending { color: var(--green); }
 
   .pattern-num.error {
     color: var(--red);
@@ -146,30 +143,65 @@
     font-size: 0.6rem;
     color: var(--muted);
     letter-spacing: 2px;
-    margin-top: 6px;
     text-transform: uppercase;
   }
 
-  /* ── Numpad ─────────────────────────────────────── */
+  /* ── Bottom Section ─────────────────────────────── */
 
-  .numpad {
-    padding: 8px 12px 24px;
+  .bottom {
     flex-shrink: 0;
+    padding: 0 10px 20px;
   }
+
+  /* ── Quick Jumps ────────────────────────────────── */
+
+  .quick {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .quick button {
+    padding: 8px 0;
+    width: 52px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 500;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+  }
+
+  .quick button:active {
+    background: #1e1e1e;
+    color: var(--text);
+  }
+
+  .quick button:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+  }
+
+  /* ── Numpad ─────────────────────────────────────── */
 
   .numpad-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
-    max-width: 340px;
+    max-width: 360px;
     margin: 0 auto;
   }
 
   .key {
-    height: 56px;
+    height: 58px;
     border: none;
-    border-radius: 10px;
-    font-size: 1.4rem;
+    border-radius: 12px;
+    font-size: 1.5rem;
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
@@ -180,9 +212,7 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  .key:active {
-    transform: scale(0.93);
-  }
+  .key:active { transform: scale(0.94); }
 
   .key-num {
     background: var(--surface);
@@ -190,34 +220,28 @@
     border: 1px solid var(--border);
   }
 
-  .key-num:active {
-    background: #1a1a1a;
-  }
+  .key-num:active { background: #1e1e1e; }
 
   .key-del {
     background: var(--surface);
     color: var(--muted);
     border: 1px solid var(--border);
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
 
-  .key-del:active {
-    background: #1a1a1a;
-  }
+  .key-del:active { background: #1e1e1e; }
 
   .key-send {
     background: var(--orange);
     color: #0a0a0a;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 1rem;
     letter-spacing: 2px;
     text-transform: uppercase;
     border: none;
   }
 
-  .key-send:active {
-    background: var(--orange-dim);
-  }
+  .key-send:active { background: var(--orange-dim); }
 
   .key-send:disabled {
     background: #1a1a1a;
@@ -225,32 +249,18 @@
     cursor: not-allowed;
   }
 
-  .key-send:disabled:active {
-    transform: none;
-  }
-
-  .key-clear {
-    background: transparent;
-    color: var(--muted);
-    font-size: 0.75rem;
-    letter-spacing: 1px;
-    border: 1px solid var(--border);
-  }
-
-  .key-clear:active {
-    background: var(--surface);
-  }
+  .key-send:disabled:active { transform: none; }
 
   /* ── Toast ──────────────────────────────────────── */
 
   .toast {
     position: fixed;
-    bottom: 24px;
+    bottom: 30px;
     left: 50%;
     transform: translateX(-50%) translateY(80px);
     padding: 10px 22px;
     border-radius: 8px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 500;
     letter-spacing: 1px;
     pointer-events: none;
@@ -264,55 +274,17 @@
     opacity: 1;
   }
 
-  .toast.ok {
-    background: rgba(76, 175, 80, 0.9);
-    color: #fff;
-  }
-
-  .toast.err {
-    background: rgba(255, 51, 51, 0.9);
-    color: #fff;
-  }
-
-  /* ── Quick jumps ────────────────────────────────── */
-
-  .quick {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    padding: 0 12px 6px;
-    flex-shrink: 0;
-  }
-
-  .quick button {
-    padding: 6px 12px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: var(--surface);
-    color: var(--muted);
-    font-size: 0.6rem;
-    font-family: inherit;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: background 0.1s;
-  }
-
-  .quick button:active {
-    background: #1a1a1a;
-    color: var(--text);
-  }
-
-  .quick button:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
+  .toast.ok { background: rgba(76, 175, 80, 0.92); color: #fff; }
+  .toast.err { background: rgba(255, 51, 51, 0.92); color: #fff; }
 </style>
 </head>
 <body>
 
   <div class="header">
-    <h1>Electribe 2</h1>
-    <div class="sub">Pattern Change — USB MIDI</div>
+    <div class="header-left">
+      <h1>Electribe 2</h1>
+      <div class="sub">Pattern Change — USB MIDI</div>
+    </div>
     <div class="conn" id="conn">
       <div class="dot"></div>
       <span class="name" id="conn-name">Connecting...</span>
@@ -324,16 +296,16 @@
     <div class="send-hint" id="send-hint">Tap a number</div>
   </div>
 
-  <div class="quick" id="quick">
-    <button onclick="jumpTo(1)">001</button>
-    <button onclick="jumpTo(33)">033</button>
-    <button onclick="jumpTo(65)">065</button>
-    <button onclick="jumpTo(97)">097</button>
-    <button onclick="jumpTo(129)">129</button>
-    <button onclick="jumpTo(200)">200</button>
-  </div>
+  <div class="bottom">
+    <div class="quick" id="quick">
+      <button onclick="jumpTo(1)">001</button>
+      <button onclick="jumpTo(33)">033</button>
+      <button onclick="jumpTo(65)">065</button>
+      <button onclick="jumpTo(97)">097</button>
+      <button onclick="jumpTo(129)">129</button>
+      <button onclick="jumpTo(200)">200</button>
+    </div>
 
-  <div class="numpad">
     <div class="numpad-grid">
       <button class="key key-num" data-val="1">1</button>
       <button class="key key-num" data-val="2">2</button>
@@ -354,17 +326,15 @@
 
 <script>
 (function () {
-  // ── DOM ──────────────────────────────────────────
-  const display    = document.getElementById('display');
-  const sendHint   = document.getElementById('send-hint');
-  const connEl     = document.getElementById('conn');
-  const connName   = document.getElementById('conn-name');
-  const btnDel     = document.getElementById('btn-del');
-  const btnSend    = document.getElementById('btn-send');
-  const toastEl    = document.getElementById('toast');
-  const quickBar   = document.getElementById('quick');
+  const display  = document.getElementById('display');
+  const sendHint = document.getElementById('send-hint');
+  const connEl   = document.getElementById('conn');
+  const connName = document.getElementById('conn-name');
+  const btnDel   = document.getElementById('btn-del');
+  const btnSend  = document.getElementById('btn-send');
+  const toastEl  = document.getElementById('toast');
+  const quickBar = document.getElementById('quick');
 
-  // ── State ────────────────────────────────────────
   let currentInput = '';
   let midiAccess   = null;
   let output       = null;
@@ -449,11 +419,9 @@
       connName.textContent = 'Connect Electribe 2 via USB';
       btnSend.disabled = true;
       quickBar.querySelectorAll('button').forEach(b => b.disabled = true);
-
-      // Show available devices for debug
       const devs = [];
       for (const [, p] of midiAccess.outputs) devs.push(p.name);
-      if (devs.length) connName.textContent += ' — Found: ' + devs.join(', ');
+      if (devs.length) connName.textContent += ' — ' + devs.join(', ');
     }
   }
 
@@ -463,15 +431,12 @@
     if (!output || sending) return false;
     sending = true;
 
-    const internal = patternNum - 1;      // 0-249
-    const bank     = Math.floor(internal / 128); // 0 or 1
-    const program  = internal % 128;       // 0-127
+    const internal = patternNum - 1;
+    const bank     = Math.floor(internal / 128);
+    const program  = internal % 128;
 
-    // Bank Select MSB (CC0) always 0
     output.send([0xB0, 0x00, 0x00]);
-    // Bank Select LSB (CC32) = bank index
     output.send([0xB0, 0x20, bank]);
-    // Program Change
     output.send([0xC0, program]);
 
     setTimeout(() => { sending = false; }, 150);
@@ -491,12 +456,12 @@
       return;
     }
 
-    const display_ = String(num).padStart(3, '0');
+    const d = String(num).padStart(3, '0');
 
     if (sendPC(num)) {
       flashDisplay('sending');
       vibrate(30);
-      showToast('Pattern ' + display_ + ' sent', 'ok');
+      showToast('Pattern ' + d + ' sent', 'ok');
       setTimeout(() => {
         currentInput = '';
         refreshDisplay();
@@ -525,7 +490,6 @@
 
   btnSend.addEventListener('click', doSend);
 
-  // Clear on long-press del
   let delLong = null;
   btnDel.addEventListener('pointerdown', () => {
     delLong = setTimeout(() => {
@@ -537,16 +501,12 @@
   btnDel.addEventListener('pointerup', () => clearTimeout(delLong));
   btnDel.addEventListener('pointercancel', () => clearTimeout(delLong));
 
-  // ── Quick Jumps ──────────────────────────────────
-
   window.jumpTo = function(n) {
     vibrate(20);
     currentInput = String(n);
     refreshDisplay();
     doSend();
   };
-
-  // ── Physical keyboard support ────────────────────
 
   document.addEventListener('keydown', (e) => {
     if (e.key >= '0' && e.key <= '9' && currentInput.length < 3) {
@@ -564,12 +524,9 @@
     }
   });
 
-  // ── Prevent double-tap zoom on mobile ────────────
   document.addEventListener('dblclick', (e) => e.preventDefault());
 
-  // ── Boot ─────────────────────────────────────────
   initMIDI();
-
 })();
 </script>
 
